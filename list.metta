@@ -31,15 +31,18 @@
 ! (append (:: 1 (:: 2 Nil)) (:: 3 (:: 4 Nil))) 
 
 (= (max-value (:: $x Nil)) $x)
-(= (max-value (:: $x (:: $y $ys))) 
-   (if (> $x (max-value (:: $y $ys))) $x (max-value (:: $y $ys))))
+(= (max-value (:: $x (:: $y $ys)))
+   (bind! $max-rest (max-value (:: $y $ys)))
+   (if (> $x $max-rest) $x $max-rest))
 
-! (max-value (:: 3 (:: 7 (:: 2 Nil)))) 
+! (max-value (:: 3 (:: 7 (:: 2 Nil))))
+
+
 
 (= (min-value (:: $x Nil)) $x)
-(= (min-value (:: $x (:: $y $ys))) 
-   (if (< $x (min-value (:: $y $ys))) $x (min-value (:: $y $ys))))
-
+(= (min-value (:: $x (:: $y $ys)))
+   (bind! $min-rest (min-value (:: $y $ys)))
+   (if (< $x $min-rest) $x $min-rest))
 ! (min-value (:: 3 (:: 7 (:: 2 Nil))))
 
 
@@ -117,3 +120,49 @@
 (= (sort (:: $x $xs)) (insert $x (sort $xs)))
 
 ! (sort (:: 3 (:: 1 (:: 2 Nil)))) 
+
+(=(sum $x $y)(+ $x $y))
+(=(sum $x $y $z)(+ $x (+ $y $z)))
+!(sum 4 6)
+!(sum 8 9 45)
+
+(=(product $x $y)(* $x $y))
+!(product 8 4)
+
+(: compose ->(-> $B $C)(-> $A $B)(->$A $B))
+(=(compose $f $g $x)($f ($g $x)))
+(: add1 (-> Number Number))
+(=(add1 $x)(+ $x 1))
+(: square (-> Number Number))
+(=(square $x)(* $x $x))
+!(compose square add1 4)
+
+(: curry (-> (-> $A $B $C)(->$A(-> $B $C))))
+(=(((curry $f)$x)$y)($f $x $y))
+
+(: curry2 (->(-> $A $B $C) $A (-> $B $C)))
+(=((curry2 $f $x)$y)($f $x $y))
+
+!(((curry add) 6) 7)
+!((curry2 add 7) 9)
+
+(: until (-> (-> $a Bool) (-> $a $a) $a $a))
+(= (until $pred $f $x)
+   (if ($pred $x)
+       $x
+       (until $pred $f ($f $x))))
+(: greater-than-10 (-> Number Bool))
+(= (greater-than-10 $x) (> $x 10))
+
+(: add2 (-> Number Number))
+(= (add2 $x) (+ $x 2))
+
+! (until greater-than-10 add2 2) 
+
+
+(: count (-> Number Number (List Number)))
+(= (count $from $to)
+   (if (> $from $to)
+       Nil
+       (:: $from (count (+ $from 1) $to))))
+! (count 1 5) 
