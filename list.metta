@@ -120,15 +120,6 @@
 (= (sort (:: $x $xs)) (insert $x (sort $xs)))
 
 ! (sort (:: 3 (:: 1 (:: 2 Nil)))) 
-
-(=(sum $x $y)(+ $x $y))
-(=(sum $x $y $z)(+ $x (+ $y $z)))
-!(sum 4 6)
-!(sum 8 9 45)
-
-(=(product $x $y)(* $x $y))
-!(product 8 4)
-
 (: compose ->(-> $B $C)(-> $A $B)(->$A $B))
 (=(compose $f $g $x)($f ($g $x)))
 (: add1 (-> Number Number))
@@ -140,11 +131,13 @@
 (: curry (-> (-> $A $B $C)(->$A(-> $B $C))))
 (=(((curry $f)$x)$y)($f $x $y))
 
-(: curry2 (->(-> $A $B $C) $A (-> $B $C)))
-(=((curry2 $f $x)$y)($f $x $y))
+(: curry2 (->(-> $A $B $C $D) $A (-> $B $C $D)))
+(=((curry2 $f $x)$y $z)($f $x $y $z))
+(: add3(-> Number Number Number Number))
+(=(add3 $x $y $z)(+ $x (+ $y $z)))
 
 !(((curry add) 6) 7)
-!((curry2 add 7) 9)
+!((curry2 add3 7) 9 8)
 
 (: until (-> (-> $a Bool) (-> $a $a) $a $a))
 (= (until $pred $f $x)
@@ -159,10 +152,16 @@
 
 ! (until greater-than-10 add2 2) 
 
+(= (sum Nil)0)
+(=(sum (:: $x $xs))(+ $x (sum $xs)))
+!(sum (:: 4(:: 9(:: 5 Nil))))
 
-(: count (-> Number Number (List Number)))
-(= (count $from $to)
-   (if (> $from $to)
-       Nil
-       (:: $from (count (+ $from 1) $to))))
-! (count 1 5) 
+
+(=(product Nil)1)
+(=(product (:: $x $xs ))(* $x (product $xs)))
+!(product (:: 4(:: 9(:: 5 Nil))))
+
+(: count(-> $t (List $t)Number))
+(=(count $x Nil)0)
+(=(count $x(:: $y $ys))(if (== $x $y)(+ 1 (count $x $ys))(count $x $ys)))
+!(count 6 (:: 6(:: 4(:: 6(:: 8(:: 3 Nil))))))
