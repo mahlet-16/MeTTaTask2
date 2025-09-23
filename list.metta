@@ -164,4 +164,12 @@
 (: count(-> $t (List $t)Number))
 (=(count $x Nil)0)
 (=(count $x(:: $y $ys))(if (== $x $y)(+ 1 (count $x $ys))(count $x $ys)))
-!(count 6 (:: 6(:: 4(:: 6(:: 8(:: 3 Nil))))))
+!(count 6(:: 8(:: 4(:: 6(:: 9(:: 6(:: 6 Nil)))))))
+
+(=(while $pred $f $x)(if ($pred $x)(while $pred $f ( $f $x))$x))
+
+(: less-than-10(-> Number Bool))
+(=(less-than-10 $x)(< $x 10))
+(: add3 (-> Number Number))
+(=(add3 $x)(+ $x 3))
+!(while less-than-10 add3 2)
