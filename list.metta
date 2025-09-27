@@ -2,12 +2,16 @@
 (: Leaf (Tree $t))
 (: Node (-> $t (Tree $t) (Tree $t) (Tree $t)))
 
-(Node "grandParent"
-  (Node "Parent1"
-    (Node "child1" (Leaf) (Leaf))
-    (Node "child2" (Leaf) (Leaf)))
-  (Node "Parent2" (Leaf) (Leaf))
-)
+(= tree 
+   (Node 8
+      (Node 7
+         (Node 6 (Leaf) (Leaf))
+         (Node 5 (Leaf) (Leaf)))
+      (Node 4 
+         (Node 3 (Leaf)(Leaf))
+         (Leaf))
+))
+
 
 ;Question two
 (: Nil (List $t))
@@ -29,6 +33,12 @@
 (= (append (:: $x $xs) $ys) (:: $x (append $xs $ys)))
 
 ! (append (:: 1 (:: 2 Nil)) (:: 3 (:: 4 Nil))) 
+
+
+(: pre-order (->(Tree Number)(List Number)))
+(=(pre-order (Leaf))Nil)
+(=(pre-order (Node $node $left $right))(:: $node (append (pre-order $left) (pre-order $right))))
+!(pre-order tree)
 
 (= (max-value (:: $x Nil)) $x)
 (= (max-value (:: $x (:: $y $ys)))
@@ -152,14 +162,14 @@
 
 ! (until greater-than-10 add2 2) 
 
-(= (sum Nil)0)
-(=(sum (:: $x $xs))(+ $x (sum $xs)))
-!(sum (:: 4(:: 9(:: 5 Nil))))
+;(= (sum Nil)0)
+;(=(sum (:: $x $xs))(+ $x (sum $xs)))
+;!(sum (:: 4(:: 9(:: 5 Nil))))
 
 
-(=(product Nil)1)
-(=(product (:: $x $xs ))(* $x (product $xs)))
-!(product (:: 4(:: 9(:: 5 Nil))))
+;(=(product Nil)1)
+;(=(product (:: $x $xs ))(* $x (product $xs)))
+;!(product (:: 4(:: 9(:: 5 Nil))))
 
 (: count(-> $t (List $t)Number))
 (=(count $x Nil)0)
@@ -173,3 +183,11 @@
 (: add3 (-> Number Number))
 (=(add3 $x)(+ $x 3))
 !(while less-than-10 add3 2)
+(=(sum $list)(foldl add 0 $list))
+!(sum (:: 4(:: 9(:: 5 Nil))))
+
+(: multiply (-> Number Number Number))
+(=(multiply $x $y)(* $x $y))
+(=(product $list)(foldl multiply 1 $list))
+!(product (:: 4(:: 9(:: 5 Nil))))
+
